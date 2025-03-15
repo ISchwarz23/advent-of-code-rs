@@ -26,7 +26,7 @@ cargo scaffold <day>
 # 🎄 Type `cargo solve 01` to run your solution.
 ```
 
-Individual solutions live in the `./src/bin/` directory as separate binaries. _Inputs_ and _examples_ live in the the `./data` directory.
+Individual solutions live in the `./src/bin/` directory as separate binaries. _Inputs_ and _examples_ live in the `./data` directory.
 
 Every [solution](https://github.com/fspoettel/advent-of-code-rust/blob/main/src/template.txt) has _tests_ referencing its _example_ file in `./data/examples`. Use these tests to develop and debug your solutions against the example input. In VS Code, `rust-analyzer` will display buttons for running / debugging these unit tests above the unit test blocks.
 
