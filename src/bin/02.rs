@@ -1,17 +1,21 @@
 advent_of_code::solution!(2);
 
 pub fn part_one(input: &str) -> Option<u64> {
-    Some(
-        input
-            .lines()
-            .map(|line| parse_line_to_sequence(line))
-            .filter(|sequence| is_safe(sequence))
-            .count() as u64,
-    )
+    let result = input
+        .lines()
+        .map(|line| parse_line_to_sequence(line))
+        .filter(|sequence| is_safe(sequence))
+        .count();
+    Some(result as u64)
 }
 
-pub fn part_two(_input: &str) -> Option<u64> {
-    None
+pub fn part_two(input: &str) -> Option<u64> {
+    let result = input
+        .lines()
+        .map(|line| parse_line_to_sequence(line))
+        .filter(|sequence| is_safe_when_skipping(sequence))
+        .count();
+    Some(result as u64)
 }
 
 fn parse_line_to_sequence(line: &str) -> Vec<i32> {
@@ -28,8 +32,19 @@ fn is_safe(sequence: &Vec<i32>) -> bool {
         .all(|delta| safe_deltas.contains(&delta))
 }
 
+fn is_safe_when_skipping(sequence: &Vec<i32>) -> bool {
+    for i in 0..sequence.len() {
+        let mut sequence_with_skipped_value = sequence.clone();
+        sequence_with_skipped_value.remove(i);
+        if is_safe(&sequence_with_skipped_value) {
+            return true;
+        }
+    }
+    false
+}
+
 fn is_ascending(sequence: &Vec<i32>) -> bool {
-    sequence.iter().take(3).sum::<i32>() / 3 < sequence.iter().rev().take(3).sum::<i32>() / 3
+    sequence.first().unwrap() < sequence.last().unwrap()
 }
 
 #[cfg(test)]
@@ -45,6 +60,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(4));
     }
 }
