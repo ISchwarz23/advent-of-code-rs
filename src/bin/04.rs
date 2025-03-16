@@ -1,4 +1,8 @@
 use std::ops::Add;
+use std::ops::Sub;
+
+mod utils;
+use utils::Vector2d;
 
 advent_of_code::solution!(4);
 
@@ -26,13 +30,39 @@ pub fn part_one(input: &str) -> Option<u64> {
         DIR_RIGHT_DOWN,
     ];
 
+    let result = find_locations_of_char(&grid, &'X')
+        .into_iter()
+        .flat_map(|x_location| read_words_from_grid(&grid, &x_location, 4, &all_directions))
+        .filter(|word| word == "XMAS")
+        .count();
+    Some(result as u64)
+}
+
+pub fn part_two(input: &str) -> Option<u64> {
+    let grid: Vec<Vec<char>> = to_grid(input);
+
+    let result = find_locations_of_char(&grid, &'A')
+        .into_iter()
+        .map(|x_location| read_diagonal_words_from_grid(&grid, &x_location, 3))
+        .filter(|diagonal_words| diagonal_words.iter().filter(|word| *word == "MAS").count() == 2)
+        .count();
+    Some(result as u64)
+}
+
+fn to_grid(input: &str) -> Vec<Vec<char>> {
+    input
+        .lines()
+        .map(|line| line.chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>()
+}
+
+fn find_locations_of_char(grid: &Vec<Vec<char>>, char_to_find: &char) -> Vec<Vector2d> {
     // TODO: check what the "move" keyword is doing?
-    let result = grid
-        .iter()
+    grid.iter()
         .enumerate()
         .flat_map(|(y, line)| {
             line.iter().enumerate().filter_map(move |(x, c)| {
-                if c == &'X' {
+                if c == char_to_find {
                     Some(Vector2d {
                         x: x as i32,
                         y: y as i32,
@@ -42,21 +72,7 @@ pub fn part_one(input: &str) -> Option<u64> {
                 }
             })
         })
-        .flat_map(|x_location| read_words_from_grid(&grid, &x_location, 4, &all_directions))
-        .filter(|word| word == "XMAS")
-        .count();
-    Some(result as u64)
-}
-
-pub fn part_two(_input: &str) -> Option<u64> {
-    None
-}
-
-fn to_grid(input: &str) -> Vec<Vec<char>> {
-    input
-        .lines()
-        .map(|line| line.chars().collect::<Vec<char>>())
-        .collect::<Vec<Vec<char>>>()
+        .collect::<Vec<Vector2d>>()
 }
 
 fn read_words_from_grid(
@@ -68,6 +84,19 @@ fn read_words_from_grid(
     directions
         .iter()
         .filter_map(|direction| read_word_from_grid(grid, start_location, word_length, direction))
+        .collect()
+}
+
+fn read_diagonal_words_from_grid(
+    grid: &Vec<Vec<char>>,
+    start_location: &Vector2d,
+    word_length: u8,
+) -> Vec<String> {
+    vec![DIR_RIGHT_UP, DIR_LEFT_UP, DIR_LEFT_DOWN, DIR_RIGHT_DOWN]
+        .iter()
+        .filter_map(|direction| {
+            read_word_from_grid(grid, &(start_location - &direction), word_length, direction)
+        })
         .collect()
 }
 
@@ -89,35 +118,6 @@ fn read_word_from_grid(
     Some(word)
 }
 
-// TODO: move to utils
-
-#[derive(Clone, Debug)]
-struct Vector2d {
-    x: i32,
-    y: i32,
-}
-
-impl Add for Vector2d {
-    type Output = Vector2d;
-
-    fn add(self, other: Self) -> Vector2d {
-        Vector2d {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        }
-    }
-}
-
-impl Add for &Vector2d {
-    type Output = Vector2d;
-
-    fn add(self, other: Self) -> Self::Output {
-        Vector2d {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        }
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -132,6 +132,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(9));
     }
 }
