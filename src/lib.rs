@@ -1,3 +1,79 @@
 pub mod template;
 
-// Use this file to add helper functions and additional modules.
+pub mod vector {
+    use std::ops::{Add, Sub};
+
+    #[derive(Clone, Debug)]
+    pub struct Vector2d {
+        pub x: i32,
+        pub y: i32,
+    }
+
+    impl Add for Vector2d {
+        type Output = Vector2d;
+
+        fn add(self, other: Self) -> Vector2d {
+            Vector2d {
+                x: self.x + other.x,
+                y: self.y + other.y,
+            }
+        }
+    }
+
+    impl Sub for Vector2d {
+        type Output = Vector2d;
+
+        fn sub(self, other: Self) -> Self::Output {
+            Vector2d {
+                x: self.x - other.x,
+                y: self.y - other.y,
+            }
+        }
+    }
+
+    impl Add for &Vector2d {
+        type Output = Vector2d;
+
+        fn add(self, other: Self) -> Self::Output {
+            Vector2d {
+                x: self.x + other.x,
+                y: self.y + other.y,
+            }
+        }
+    }
+
+    impl Sub for &Vector2d {
+        type Output = Vector2d;
+
+        fn sub(self, other: Self) -> Self::Output {
+            Vector2d {
+                x: self.x - other.x,
+                y: self.y - other.y,
+            }
+        }
+    }
+
+    pub const DIR_RIGHT: Vector2d = Vector2d { x: 1, y: 0 };
+    pub const DIR_DOWN: Vector2d = Vector2d { x: 0, y: 1 };
+    pub const DIR_LEFT: Vector2d = Vector2d { x: -1, y: 0 };
+    pub const DIR_UP: Vector2d = Vector2d { x: 0, y: -1 };
+    pub const DIRS_MAIN: [Vector2d; 4] = [DIR_RIGHT, DIR_UP, DIR_LEFT, DIR_DOWN];
+
+    pub const DIR_RIGHT_DOWN: Vector2d = Vector2d { x: 1, y: 1 };
+    pub const DIR_RIGHT_UP: Vector2d = Vector2d { x: 1, y: -1 };
+    pub const DIR_LEFT_UP: Vector2d = Vector2d { x: -1, y: -1 };
+    pub const DIR_LEFT_DOWN: Vector2d = Vector2d { x: -1, y: 1 };
+    pub const DIRS_DIAGONALS: [Vector2d; 4] =
+        [DIR_RIGHT_DOWN, DIR_RIGHT_UP, DIR_LEFT_UP, DIR_LEFT_DOWN];
+
+    pub const DIRS_ALL: [Vector2d; 8] = [
+        DIR_RIGHT,
+        DIR_RIGHT_UP,
+        DIR_UP,
+        DIR_LEFT_UP,
+        DIR_LEFT,
+        DIR_LEFT_DOWN,
+        DIR_DOWN,
+        DIR_RIGHT_DOWN,
+    ];
+}

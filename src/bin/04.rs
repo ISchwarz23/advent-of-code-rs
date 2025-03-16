@@ -1,38 +1,13 @@
-use std::ops::Add;
-use std::ops::Sub;
-
-mod utils;
-use utils::Vector2d;
+use advent_of_code::vector::{Vector2d, DIRS_ALL, DIRS_DIAGONALS};
 
 advent_of_code::solution!(4);
-
-const DIR_RIGHT: Vector2d = Vector2d { x: 1, y: 0 };
-const DIR_DOWN: Vector2d = Vector2d { x: 0, y: 1 };
-const DIR_LEFT: Vector2d = Vector2d { x: -1, y: 0 };
-const DIR_UP: Vector2d = Vector2d { x: 0, y: -1 };
-
-const DIR_RIGHT_DOWN: Vector2d = Vector2d { x: 1, y: 1 };
-const DIR_RIGHT_UP: Vector2d = Vector2d { x: 1, y: -1 };
-const DIR_LEFT_DOWN: Vector2d = Vector2d { x: -1, y: 1 };
-const DIR_LEFT_UP: Vector2d = Vector2d { x: -1, y: -1 };
 
 pub fn part_one(input: &str) -> Option<u64> {
     let grid: Vec<Vec<char>> = to_grid(input);
 
-    let all_directions: Vec<Vector2d> = vec![
-        DIR_RIGHT,
-        DIR_RIGHT_UP,
-        DIR_UP,
-        DIR_LEFT_UP,
-        DIR_LEFT,
-        DIR_LEFT_DOWN,
-        DIR_DOWN,
-        DIR_RIGHT_DOWN,
-    ];
-
     let result = find_locations_of_char(&grid, &'X')
         .into_iter()
-        .flat_map(|x_location| read_words_from_grid(&grid, &x_location, 4, &all_directions))
+        .flat_map(|x_location| read_words_from_grid(&grid, &x_location, 4, &DIRS_ALL))
         .filter(|word| word == "XMAS")
         .count();
     Some(result as u64)
@@ -79,7 +54,7 @@ fn read_words_from_grid(
     grid: &Vec<Vec<char>>,
     start_location: &Vector2d,
     word_length: u8,
-    directions: &Vec<Vector2d>,
+    directions: &[Vector2d],
 ) -> Vec<String> {
     directions
         .iter()
@@ -92,7 +67,7 @@ fn read_diagonal_words_from_grid(
     start_location: &Vector2d,
     word_length: u8,
 ) -> Vec<String> {
-    vec![DIR_RIGHT_UP, DIR_LEFT_UP, DIR_LEFT_DOWN, DIR_RIGHT_DOWN]
+    DIRS_DIAGONALS
         .iter()
         .filter_map(|direction| {
             read_word_from_grid(grid, &(start_location - &direction), word_length, direction)
@@ -117,7 +92,6 @@ fn read_word_from_grid(
     }
     Some(word)
 }
-
 
 #[cfg(test)]
 mod tests {
