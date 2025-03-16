@@ -4,7 +4,32 @@ use std::collections::HashMap;
 advent_of_code::solution!(5);
 
 pub fn part_one(input: &str) -> Option<u64> {
-    let page_ordering_rules: HashMap<(u64, u64), Ordering> = input
+    let page_comparator = parse_ordering_rules_to_comparator(input);
+    let updates: Vec<Vec<u64>> = parse_updates(input);
+
+    let result: u64 = updates
+        .into_iter()
+        .filter(|pages| check_pages_in_order(pages, &page_comparator))
+        .map(|pages| pages[pages.len() / 2])
+        .sum();
+    Some(result)
+}
+
+pub fn part_two(input: &str) -> Option<u64> {
+    let page_comparator = parse_ordering_rules_to_comparator(input);
+    let updates: Vec<Vec<u64>> = parse_updates(input);
+
+    let result: u64 = updates
+        .into_iter()
+        .filter(|pages| !check_pages_in_order(pages, &page_comparator))
+        .map(|pages| clone_and_order(&pages, &page_comparator))
+        .map(|pages| pages[pages.len() / 2])
+        .sum();
+    Some(result)
+}
+
+fn parse_ordering_rules_to_comparator(input: &str) -> impl Fn(u64, u64) -> Ordering {
+    let ordering_rules: HashMap<(u64, u64), Ordering> = input
         .lines()
         .take_while(|line| !line.is_empty())
         .map(|line| line.split_once("|").unwrap())
@@ -18,7 +43,16 @@ pub fn part_one(input: &str) -> Option<u64> {
         })
         .collect();
 
-    let updates: Vec<Vec<u64>> = input
+    move |first, second| {
+        ordering_rules
+            .get(&(first, second))
+            .map(|ord| *ord)
+            .unwrap_or(Ordering::Equal)
+    }
+}
+
+fn parse_updates(input: &str) -> Vec<Vec<u64>> {
+    input
         .lines()
         .skip_while(|line| !line.is_empty())
         .skip(1)
@@ -27,33 +61,18 @@ pub fn part_one(input: &str) -> Option<u64> {
                 .map(|page| page.parse::<u64>().unwrap())
                 .collect()
         })
-        .collect();
-
-    let result: u64 = updates
-        .into_iter()
-        .filter(|pages| check_in_order(pages, &page_ordering_rules))
-        .map(|pages| pages[pages.len() / 2])
-        .sum();
-    Some(result)
+        .collect()
 }
 
-pub fn part_two(_input: &str) -> Option<u64> {
-    None
-}
-
-fn check_in_order(pages: &Vec<u64>, ordering_rules: &HashMap<(u64, u64), Ordering>) -> bool {
-    let mut copy = pages.clone();
-    order(&mut copy, ordering_rules);
+fn check_pages_in_order<F: Fn(u64, u64) -> Ordering>(pages: &Vec<u64>, page_comparator: F) -> bool {
+    let copy = clone_and_order(pages, page_comparator);
     &copy == pages
 }
 
-fn order(pages: &mut Vec<u64>, ordering_rules: &HashMap<(u64, u64), Ordering>) {
-    pages.sort_by(|first, second| {
-        ordering_rules
-            .get(&(*first, *second))
-            .map(|ord| *ord)
-            .unwrap_or(Ordering::Equal)
-    })
+fn clone_and_order<F: Fn(u64, u64) -> Ordering>(pages: &Vec<u64>, page_comparator: F) -> Vec<u64> {
+    let mut copy = pages.clone();
+    copy.sort_by(|arg0: &u64, arg1: &u64| page_comparator(*arg0, *arg1));
+    copy
 }
 
 #[cfg(test)]
@@ -69,6 +88,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(123));
     }
 }
