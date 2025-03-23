@@ -8,15 +8,48 @@ const GUARD_DIRECTIONS: [Vector2d; 4] = [DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT];
 
 pub fn part_one(input: &str) -> Option<u64> {
     let (map_bounds, obstacles, guard_start_position) = parse_input(input)?;
+    calc_guard_path(&map_bounds, &obstacles, &guard_start_position).map(|path| path.len() as u64)
+}
 
+pub fn part_two(input: &str) -> Option<u64> {
+    let (map_bounds, obstacles, guard_start_position) = parse_input(input)?;
+
+    let mut locations_to_check = calc_guard_path(&map_bounds, &obstacles, &guard_start_position)?;
+    locations_to_check.remove(&guard_start_position);
+
+    let mut no_of_obstacles_leading_to_circle: u64 = 0;
+    for location_to_check in locations_to_check {
+        let mut adapted_obstacles = obstacles.clone(); // TODO: avoid cloning
+        adapted_obstacles.insert(location_to_check);
+        if calc_guard_path(&map_bounds, &adapted_obstacles, &guard_start_position).is_none() {
+            no_of_obstacles_leading_to_circle += 1;
+        }
+    }
+    Some(no_of_obstacles_leading_to_circle)
+}
+
+fn calc_guard_path(
+    map_bounds: &Rectangle,
+    obstacles: &HashSet<Vector2d>,
+    guard_start_position: &Vector2d,
+) -> Option<HashSet<Vector2d>> {
     let mut guard_position = guard_start_position.clone();
     let mut guard_direction_index = 0;
 
-    let mut visited_positions = HashSet::new();
+    // TODO: avoid calls to ".clone()"
+    let mut path: HashSet<GuardState> = HashSet::new();
     while map_bounds.contains(&guard_position) {
-        visited_positions.insert(guard_position.clone());
+        let current_direction = &(GUARD_DIRECTIONS[guard_direction_index]);
+        let old_path_length = path.len();
+        path.insert(GuardState {
+            position: guard_position.clone(),
+            direction: current_direction.clone(),
+        });
+        if old_path_length == path.len() {
+            return None
+        }
 
-        let next_pos = &guard_position + &(GUARD_DIRECTIONS[guard_direction_index]);
+        let next_pos = &guard_position + current_direction;
         if obstacles.contains(&next_pos) {
             // turn right
             guard_direction_index += 1;
@@ -29,11 +62,13 @@ pub fn part_one(input: &str) -> Option<u64> {
         }
     }
 
-    Some(visited_positions.len() as u64)
+    Some(path.iter().map(|state| state.position.clone()).collect())
 }
 
-pub fn part_two(_input: &str) -> Option<u64> {
-    None
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+struct GuardState {
+    position: Vector2d,
+    direction: Vector2d,
 }
 
 fn parse_input(input: &str) -> Option<(Rectangle, HashSet<Vector2d>, Vector2d)> {
@@ -61,6 +96,7 @@ fn parse_input(input: &str) -> Option<(Rectangle, HashSet<Vector2d>, Vector2d)> 
         })
         .collect();
 
+    // TODO: avoid second iteration
     let guard_start_position: Vector2d = input
         .lines()
         .enumerate()
@@ -94,6 +130,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(6));
     }
 }
