@@ -1,9 +1,30 @@
 pub mod template;
 
+pub mod rect {
+    use crate::vector::Vector2d;
+
+    #[derive(Clone, Debug, Hash, Eq, PartialEq)]
+    pub struct Rectangle {
+        pub x_from: i32,
+        pub x_to: i32,
+        pub y_from: i32,
+        pub y_to: i32,
+    }
+
+    impl Rectangle {
+        pub fn contains(&self, vector2d: &Vector2d) -> bool {
+            self.x_from <= vector2d.x
+                && vector2d.x <= self.x_to
+                && self.y_from <= vector2d.y
+                && vector2d.y <= self.y_to
+        }
+    }
+}
+
 pub mod vector {
     use std::ops::{Add, Sub};
 
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Hash, Eq, PartialEq)]
     pub struct Vector2d {
         pub x: i32,
         pub y: i32,
