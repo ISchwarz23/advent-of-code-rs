@@ -9,23 +9,31 @@ pub fn part_one(input: &str) -> Option<u64> {
     let result = map
         .get_trail_heads()
         .iter()
+        .map(|pos| get_reachable_mountain_tops(pos, &map).into_iter().collect::<HashSet<_>>())
+        .map(|unique_mountain_tops| unique_mountain_tops.iter().count() as u64)
+        .sum();
+
+    Some(result)
+}
+
+pub fn part_two(input: &str) -> Option<u64> {
+    let map = parse_map(input);
+    let result = map
+        .get_trail_heads()
+        .iter()
         .map(|pos| get_reachable_mountain_tops(pos, &map).iter().count() as u64)
         .sum();
 
     Some(result)
 }
 
-pub fn part_two(_input: &str) -> Option<u64> {
-    None
-}
-
-fn get_reachable_mountain_tops(start_pos: &Vector2d, map: &Map) -> HashSet<Vector2d> {
+fn get_reachable_mountain_tops(start_pos: &Vector2d, map: &Map) -> Vec<Vector2d> {
     let mut positions = vec![start_pos.clone()];
 
-    let mut reachable_mountain_tops: HashSet<Vector2d> = HashSet::new();
+    let mut reachable_mountain_tops: Vec<Vector2d> = Vec::new();
     while let Some(pos) = positions.pop() {
         if let Some(9) = map.get_height_at(&pos) {
-            reachable_mountain_tops.insert(pos);
+            reachable_mountain_tops.push(pos);
             continue;
         }
         find_possible_next_positions(&pos, map)
@@ -112,6 +120,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(81));
     }
 }
