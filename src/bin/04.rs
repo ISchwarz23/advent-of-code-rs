@@ -39,8 +39,8 @@ fn find_locations_of_char(grid: &Vec<Vec<char>>, char_to_find: &char) -> Vec<Vec
             line.iter().enumerate().filter_map(move |(x, c)| {
                 if c == char_to_find {
                     Some(Vector2d {
-                        x: x as i32,
-                        y: y as i32,
+                        x: x as i64,
+                        y: y as i64,
                     })
                 } else {
                     None

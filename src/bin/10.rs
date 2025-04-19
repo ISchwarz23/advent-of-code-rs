@@ -85,8 +85,8 @@ impl Map {
                 row.iter().enumerate().filter_map(move |(x, height)| {
                     if height == &0 {
                         Some(Vector2d {
-                            x: x as i32,
-                            y: y as i32,
+                            x: x as i64,
+                            y: y as i64,
                         })
                     } else {
                         None
@@ -99,9 +99,9 @@ impl Map {
     fn new(heights: Vec<Vec<u8>>) -> Map {
         let bounds = Rectangle {
             x_from: 0,
-            x_to: heights[0].len() as i32 - 1,
+            x_to: heights[0].len() as i64 - 1,
             y_from: 0,
-            y_to: heights.len() as i32 - 1,
+            y_to: heights.len() as i64 - 1,
         };
         Map { heights, bounds }
     }

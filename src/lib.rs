@@ -5,10 +5,10 @@ pub mod rect {
 
     #[derive(Clone, Debug, Hash, Eq, PartialEq)]
     pub struct Rectangle {
-        pub x_from: i32,
-        pub x_to: i32,
-        pub y_from: i32,
-        pub y_to: i32,
+        pub x_from: i64,
+        pub x_to: i64,
+        pub y_from: i64,
+        pub y_to: i64,
     }
 
     impl Rectangle {
@@ -22,18 +22,29 @@ pub mod rect {
 }
 
 pub mod vector {
-    use std::ops::{Add, Sub};
+    use std::ops::{Add, Mul, Sub};
 
     #[derive(Clone, Debug, Hash, Eq, PartialEq)]
     pub struct Vector2d {
-        pub x: i32,
-        pub y: i32,
+        pub x: i64,
+        pub y: i64,
     }
 
     impl Add for Vector2d {
         type Output = Vector2d;
 
         fn add(self, other: Self) -> Vector2d {
+            Vector2d {
+                x: self.x + other.x,
+                y: self.y + other.y,
+            }
+        }
+    }
+
+    impl Add for &Vector2d {
+        type Output = Vector2d;
+
+        fn add(self, other: Self) -> Self::Output {
             Vector2d {
                 x: self.x + other.x,
                 y: self.y + other.y,
@@ -52,17 +63,6 @@ pub mod vector {
         }
     }
 
-    impl Add for &Vector2d {
-        type Output = Vector2d;
-
-        fn add(self, other: Self) -> Self::Output {
-            Vector2d {
-                x: self.x + other.x,
-                y: self.y + other.y,
-            }
-        }
-    }
-
     impl Sub for &Vector2d {
         type Output = Vector2d;
 
@@ -70,6 +70,28 @@ pub mod vector {
             Vector2d {
                 x: self.x - other.x,
                 y: self.y - other.y,
+            }
+        }
+    }
+
+    impl Mul<i64> for Vector2d {
+        type Output = Vector2d;
+
+        fn mul(self, other: i64) -> Self::Output {
+            Vector2d {
+                x: self.x * other,
+                y: self.y * other,
+            }
+        }
+    }
+
+    impl Mul<i64> for &Vector2d {
+        type Output = Vector2d;
+
+        fn mul(self, other: i64) -> Self::Output {
+            Vector2d {
+                x: self.x * other,
+                y: self.y * other,
             }
         }
     }

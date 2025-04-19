@@ -42,8 +42,8 @@ fn parse_input(input: &str) -> HashMap<char, Vec<Vector2d>> {
                     Some((
                         ch,
                         Vector2d {
-                            x: x as i32,
-                            y: y as i32,
+                            x: x as i64,
+                            y: y as i64,
                         },
                     ))
                 }
@@ -60,9 +60,9 @@ fn get_dimensions(input: &str) -> Rectangle {
     let x = input.lines().next().unwrap().chars().count() - 1;
     Rectangle {
         x_from: 0,
-        x_to: x as i32,
+        x_to: x as i64,
         y_from: 0,
-        y_to: y as i32,
+        y_to: y as i64,
     }
 }
 

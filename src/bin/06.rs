@@ -74,9 +74,9 @@ struct GuardState {
 fn parse_input(input: &str) -> Option<(Rectangle, HashSet<Vector2d>, Vector2d)> {
     let area = Rectangle {
         x_from: 0,
-        x_to: (input.lines().next()?.len() - 1) as i32,
+        x_to: (input.lines().next()?.len() - 1) as i64,
         y_from: 0,
-        y_to: (input.lines().count() - 1) as i32,
+        y_to: (input.lines().count() - 1) as i64,
     };
 
     let obstacles: HashSet<Vector2d> = input
@@ -86,8 +86,8 @@ fn parse_input(input: &str) -> Option<(Rectangle, HashSet<Vector2d>, Vector2d)> 
             line.chars().enumerate().filter_map(move |(x, c)| {
                 if c == '#' {
                     Some(Vector2d {
-                        x: x as i32,
-                        y: y as i32,
+                        x: x as i64,
+                        y: y as i64,
                     })
                 } else {
                     None
@@ -104,8 +104,8 @@ fn parse_input(input: &str) -> Option<(Rectangle, HashSet<Vector2d>, Vector2d)> 
             line.chars().enumerate().find_map(|(x, c)| {
                 if c == '^' {
                     Some(Vector2d {
-                        x: x as i32,
-                        y: y as i32,
+                        x: x as i64,
+                        y: y as i64,
                     })
                 } else {
                     None

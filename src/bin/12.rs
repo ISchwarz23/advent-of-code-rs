@@ -69,13 +69,6 @@ fn get_neighbour_locations(plot_loc: &Vector2d) -> Vec<Vector2d> {
     ]
 }
 
-enum Side {
-    NORTH,
-    SOUTH,
-    EAST,
-    WEST,
-}
-
 fn get_sides(plot_loc: &Vector2d) -> Vec<(Vector2d, Vector2d)> {
     vec![
         (plot_loc.clone(), DIR_UP),
@@ -93,8 +86,8 @@ fn parse(input: &str) -> Vec<Plot> {
             line.chars().enumerate().map(move |(x, letter)| Plot {
                 letter,
                 location: Vector2d {
-                    x: x as i32,
-                    y: y as i32,
+                    x: x as i64,
+                    y: y as i64,
                 },
             })
         })
@@ -150,7 +143,7 @@ impl Region {
 
 
 fn get_number_horizontal_of_sides(plots: &Vec<Vector2d>) -> u64 {
-    let mut rows: HashMap<i32, Vec<i32>> = HashMap::new();
+    let mut rows: HashMap<i64, Vec<i64>> = HashMap::new();
     plots
         .iter()
         .for_each(|plot| rows.entry(plot.y).or_insert(vec![]).insert(0, plot.x));
@@ -167,7 +160,7 @@ fn get_number_horizontal_of_sides(plots: &Vec<Vector2d>) -> u64 {
 }
 
 fn get_number_vertical_of_sides(plots: &Vec<Vector2d>) -> u64 {
-    let mut columns: HashMap<i32, Vec<i32>> = HashMap::new();
+    let mut columns: HashMap<i64, Vec<i64>> = HashMap::new();
     plots
         .iter()
         .for_each(|plot| columns.entry(plot.x).or_insert(vec![]).insert(0, plot.y));
