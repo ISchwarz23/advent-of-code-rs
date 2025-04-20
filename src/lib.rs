@@ -18,6 +18,14 @@ pub mod rect {
                 && self.y_from <= vector2d.y
                 && vector2d.y <= self.y_to
         }
+
+        pub fn width(&self) -> i64 {
+            self.x_to - self.x_from
+        }
+
+        pub fn height(&self) -> i64 {
+            self.y_to - self.y_from
+        }
     }
 }
 
