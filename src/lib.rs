@@ -1,7 +1,9 @@
 pub mod template;
 
 pub mod rect {
+    use crate::range::range_inclusive_overlap;
     use crate::vector::Vector2d;
+    use std::ops::RangeInclusive;
 
     #[derive(Clone, Debug, Hash, Eq, PartialEq)]
     pub struct Rectangle {
@@ -26,6 +28,43 @@ pub mod rect {
         pub fn height(&self) -> i64 {
             self.y_to - self.y_from
         }
+
+        pub fn x_range(&self) -> RangeInclusive<i64> {
+            self.x_from..=self.x_to
+        }
+
+        pub fn y_range(&self) -> RangeInclusive<i64> {
+            self.y_from..=self.y_to
+        }
+
+        pub fn overlaps(&self, other: &Rectangle) -> bool {
+            range_inclusive_overlap(&self.x_range(), &other.x_range())
+                && range_inclusive_overlap(&self.y_range(), &other.y_range())
+        }
+
+        pub fn move_dir(&self, dir: &Vector2d) -> Rectangle {
+            Rectangle {
+                x_from: self.x_from + dir.x,
+                x_to: self.x_to + dir.x,
+                y_from: self.y_from + dir.y,
+                y_to: self.y_to + dir.y,
+            }
+        }
+    }
+}
+
+pub mod range {
+    use std::ops::{Range, RangeInclusive};
+
+    pub fn range_inclusive_overlap(
+        first: &RangeInclusive<i64>,
+        second: &RangeInclusive<i64>,
+    ) -> bool {
+        first.start() <= second.end() && second.start() <= first.end()
+    }
+
+    pub fn range_overlap(first: &Range<i64>, second: &Range<i64>) -> bool {
+        first.start < second.end && second.start < first.end
     }
 }
 
